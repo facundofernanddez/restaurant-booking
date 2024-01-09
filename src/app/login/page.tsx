@@ -1,7 +1,14 @@
+"use client";
+
+import { trpc } from "@/utils/trpc";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import { HiLockClosed } from "react-icons/hi";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [input, setInput] = useState({
     email: "",
     password: "",
@@ -13,12 +20,18 @@ export default function LoginPage() {
     setInput((prev) => ({ ...prev, [name]: value }));
   };
 
+  const { mutate: login, isError } = trpc.admin.login.useMutation({
+    onSuccess: () => {
+      router.push(" /dashboard");
+    },
+  });
+
   return (
     <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div>
           {/* If this was a real login screen, you'd want a next/image here */}
-          <img
+          <Image
             className="mx-auto h-12 w-auto"
             src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
             alt="Workflow"
@@ -44,7 +57,7 @@ export default function LoginPage() {
           />
           <div className="-space-y-px rounded-md shadow-sm">
             <p className="pb-1 text-sm text-red-600">
-              {error && "Invalid login credentials"}
+              {isError && "Invalid login credentials"}
             </p>
             <div>
               <label
